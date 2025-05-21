@@ -1,7 +1,10 @@
 from flask import Flask, request, jsonify
 import os
+from dotenv import load_dotenv
 import hashlib
 from siliconflow_api import transcribe_audio
+
+load_dotenv()
 
 app = Flask(__name__)
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "uploads")
