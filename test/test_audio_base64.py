@@ -10,14 +10,15 @@ with open(AUDIO_FILE, 'rb') as f:
     audio_bytes = f.read()
     base64_audio = base64.b64encode(audio_bytes).decode("utf-8")
 
+print(f"[DEBUG] Encoded base64 length: {len(base64_audio)}")
 payload = {
     "method": "tools.call",
     "params": {
         "method": "identify_voice",
-        "inputs": {
+        "inputs": [{
             "type": "audio",
             "value": base64_audio
-        }
+        }]
     }
 }
 

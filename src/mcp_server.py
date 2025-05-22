@@ -65,34 +65,44 @@ def help_info():
 
 @app.route('/api/v1/mcp/tools.call', methods=['POST'])
 def handle_tools_call():
-    data = request.get_json()
-
-    method = data.get("params", {}).get("method", "")
-    if method != "identify_voice":
-        return jsonify({"error": "Unsupported method"}), 400
-
-    inputs = data.get("params", {}).get("inputs", [])
-    if not inputs or inputs[0]["type"] != "audio":
-        return jsonify({"error": "Missing or invalid audio input"}), 400
-
     try:
-        audio_bytes = base64.b64decode(inputs[0]["value"])
-    except Exception:
-        return jsonify({"error": "Invalid base64 data"}), 400
+        data = request.get_json()
 
-    filename = f"{uuid.uuid4().hex}.wav"
-    file_path = os.path.join(UPLOAD_DIR, filename)
-    with open(file_path, "wb") as f:
-        f.write(audio_bytes)
+        if not data or "params" not in data:
+            return jsonify({"error": "Missing 'params' in request"}), 400
 
-    try:
+        method = data["params"].get("method", "")
+        if method != "identify_voice":
+            return jsonify({"error": "Unsupported method"}), 400
+
+        inputs = data["params"].get("inputs")
+        if not isinstance(inputs, list) or not inputs:
+            return jsonify({"error": "Missing or invalid 'inputs' list"}), 400
+
+        first_input = inputs[0]
+        if not isinstance(first_input, dict) or first_input.get("type") != "audio":
+            return jsonify({"error": "First input must be of type 'audio'"}), 400
+
+        base64_data = first_input.get("value")
+        if not base64_data:
+            return jsonify({"error": "Missing 'value' in audio input"}), 400
+
+        # Decode and save
+        audio_bytes = base64.b64decode(base64_data)
+        filename = f"{uuid.uuid4().hex}.wav"
+        file_path = os.path.join(UPLOAD_DIR, filename)
+        with open(file_path, "wb") as f:
+            f.write(audio_bytes)
+
         result = transcribe_audio(file_path)
         audio_hash = hashlib.md5(audio_bytes).hexdigest()
+
         return jsonify({
             "transcript": result.get("text", ""),
             "confidence": result.get("confidence", 0.9),
             "audio_hash": audio_hash
         })
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
