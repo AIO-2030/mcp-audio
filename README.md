@@ -16,9 +16,6 @@ It exposes the `identify_voice` method via both `multipart/form-data` and `base6
 
 ---
 
-
----
-
 ##  Setup (Local)
 
 ### 1. Clone and Install
@@ -48,9 +45,9 @@ API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 python src/mcp_server.py
 ```
 
-## Docker
+### 4. Docker
 
-### Build and Run
+#### 4.1 Build and Run
 ```bash
 docker build -t mcp-audio .
 docker run --env-file .env -p 8080:8080 mcp-audio
