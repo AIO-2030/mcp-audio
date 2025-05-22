@@ -21,7 +21,7 @@ It exposes the `identify_voice` method via both `multipart/form-data` and `base6
 ### 1. Clone and Install
 
 ```bash
-git clone https://github.com/your-org/mcp-audio.git
+git clone git@github.com:AIO-2030/mcp-audio.git
 cd mcp-audio
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
