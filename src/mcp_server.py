@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, request, jsonify
 import os
 from dotenv import load_dotenv
@@ -37,30 +39,11 @@ def handle_audio_upload():
 
 @app.route('/api/v1/mcp/help', methods=['GET'])
 def help_info():
-    return jsonify({
-        "description": "MCP plugin for SiliconFlow voice transcription",
-        "capability_tags": ["voice_recognition", "text_extraction"],
-        "methods": [
-            {
-                "name": "identify_voice",
-                "description": "Identify voice from audio file",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "audio": {
-                            "type": "file",
-                            "description": "Audio file"
-                        }
-                    },
-                    "required": ["audio"]
-                }
-            }
-        ],
-        "source": {
-            "author": "AIO-2030",
-            "version": "1.0"
-        }
-    })
+    try:
+        with open(os.path.join(os.path.dirname(__file__), "../mcp_audio_registration.json")) as f:
+            return jsonify(json.load(f))
+    except Exception as e:
+        return jsonify({"error": "Failed to load help content", "details": str(e)}), 50
 
 
 @app.route('/api/v1/mcp/tools.call', methods=['POST'])
